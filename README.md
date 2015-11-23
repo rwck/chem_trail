@@ -1,10 +1,48 @@
 # Chem Trail
 
-A simple app for tracking pharmacy opening hours so you can plan your pseudo-ephedrine buying spree. Also learn Rails testing.
+A simple app for tracking pharmacy opening hours so you can plan your
+pseudo-ephedrine buying spree. Also learn Rails testing.
 
 ----
 
 ## TDD
+
+Let's revise what makes code good (according to one of my programming heroes,
+Corey Haines):
+
+**Good code is easy to change** and code is easy to change when it is:
+
+1. Verifiable
+2. Easy to understand
+3. No repetition
+4. Concise
+
+Note that Verifiable is number 1. We could ask a QA to sit and verify our code
+any time we change it. Or we could do it ourselves. That works but it ends up
+being very very time consuming. Automated testing is intended to make
+requirement 1 much much faster.
+
+Here is the TDD workflow:
+
+![Red Green Refactor cycle](rgr.png)
+
+Notice that tests are written first. This is intended to force you to plan and
+think about how your classes are going to work together before you get stuck
+into writing them. It's not a strict rule, however, and if you don't know where
+to begin, it's worth writing a *prototype* first. A prototype, according to me,
+is code without tests, that is written with an experimental or exploratory
+intention.
+
+Did you feel like the more you worked on your project, the more you ran up
+against fiddly bugs that slowed you down and even stopped your progress
+completely? Testing is intended to help you continue to make progress
+even on very complex projects.
+
+The main way testing helps you keep moving forward even with high complexity is
+by catching **regressions** which are bugs caused accidentally in code while
+you were busy trying to add a new feature or fix a bug.
+
+That is, the idea is to run all your tests after each change to the code.
 
 ### Set up RSpec
 
@@ -78,6 +116,33 @@ A simple app for tracking pharmacy opening hours so you can plan your pseudo-eph
 
 ### Doubles and unit test isolation
 
+Classes almost always refer to other classes. These are called dependencies.
+The more dependencies each unit has, the more *knotty* and difficult to manage
+your program is likely to be. However such dependencies are inevitable and
+desirable to achieve whatever functionality you're aiming for.
+
+There are a few ways to elegantly manage dependencies in the context of
+testing.
+
+The first trick is to pass in fake objects that are created by the test
+framework, instead of real objects of the real classes required. Fake objects
+can be set up to monitor what functions are called on them and make assertions,
+or to always provide a consistent answer to avoid external calculation or
+complexity. Such fake objects are called **doubles** (also sometimes called
+mocks or stubs), like an actor who pretends to be a
+famous person. I think the movie [The Truman Show](https://en.wikipedia.org/wiki/The_Truman_Show)
+is a great way to think about isolation and doubles. Truman is the object under
+test - the only "real" object, and everything around him is fake and set up to
+help us examine him.
+
+The second trick is to write your unit (class) in such a manner that any
+dependencies (other objects or classes) it uses are passed into it, either in
+its constructor or in arguments to functions. That way, when the class is under
+test, the test framework can pass in fake objects easily. This concept is
+called **dependency injection**. In the Truman example, we never let Truman go
+and find his own doctor, lawyer, etc., as he might end up finding a real one!
+Instead we force him to use the ones that we provide to him. Fake ones.
+
 * Edit `spec/models/pharmacy_spec.rb`:
 
   ```ruby
@@ -96,7 +161,6 @@ A simple app for tracking pharmacy opening hours so you can plan your pseudo-eph
     end
   end
   ```
-
 
 * Run the tests:
 
@@ -131,7 +195,8 @@ There are a few ways to create data for tests to run on:
 Fixtures were popular when Rails first came along. The functionality for them
 is built into Rails. But after developers used them for a while, they found
 that large suites of tests were unmaintainable, since each fixture was re-used
-between tests and this created a huge number of dependencies to think about.
+between tests and this made it difficult to change them without breaking half
+the tests.
 
 Directly using Rails models was deemed difficult because often most of the
 attributes on each model are unrelated to the test scenario, in which case the
@@ -146,7 +211,7 @@ and there is less work to do when writing each test.
 NB: There are some people who also don't like factories and argue that if your
 Rails app's API is inconvenient to use, you should improve it rather than using
 factories to get around the problem. I'm not sure how they handle providing
-numerous test-env specific default values to Rails models, though.
+numerous test environment specific default values to Rails models, though.
 
 ### Install FactoryGirl and set it up
 
@@ -203,8 +268,8 @@ Run it:
   ```
 
 Notice how we didn't have to specify the `name` of the pharmacy when we created
-it in the test. We could also set any defaults we liked for all attributes
-involved.
+it in the test, even though `name` is a required attribute of `Pharmacy`. We
+could also set any defaults we liked for all attributes involved.
 
 ----
 
@@ -220,6 +285,13 @@ browser.
 It's called "driven development" because by writing an acceptance test first,
 you can progressively implement a feature until it half passes, 3/4 passes, and
 then fully passes. Running the test each time tells you where you're up to.
+
+This is what that looks like, in diagram form:
+
+![Behaviour Driven Development Workflow](bdd.png)
+
+Notice the way that multiple TDD Red-Green-Refactor cycles fit inside one BDD
+cycle.
 
 ### Set up RSpec acceptance testing
 
@@ -390,12 +462,16 @@ Add to `app/assets/javascripts/application.js`:
   //= require jquery_nested_form
   ```
 
-Run the test and get it passing. You may have to implement more Rails code before it passes. You may also have to install Firefox if you don't already have it.
+Run the test and get it passing. You may have to implement more Rails code
+before it passes. You may also have to install Firefox if you don't already
+have it. You may also want to use TDD to build the little bits and pieces
+you need.
 
   ```
   rspec spec/features/manage_pharmacies_spec.rb
   ```
 
-Notice the way a Firefox window pops up and runs your test.
+Notice the way a Firefox window pops up, under remote control, and runs your
+test.
 
 
