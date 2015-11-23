@@ -119,6 +119,93 @@ A simple app for tracking pharmacy opening hours so you can plan your pseudo-eph
 * Check what the coverage is.
 
 
+## Factories
+
+There are a few ways to create data for tests to run on:
+
+* Use your application's APIs (such as your Rails models) at the start of each.
+* Use fixtures, which are constant test scenario data, re-useable across all tests.
+* Use "factory" libraries, which are intended to provide ultra convenient ways
+  to create Rails models and objects at the start of each test scenario.
+
+Fixtures were popular when Rails first came along. The functionality for them
+is built into Rails. But after developers used them for a while, they found
+that large suites of tests were unmaintainable, since each fixture was re-used
+between tests and this created a huge number of dependencies to think about.
+
+Directly using Rails models was deemed difficult because often most of the
+attributes on each model are unrelated to the test scenario, in which case the
+work required in each test is unnecessarily high.
+
+Factories are classes and functions that are designed to create Ruby objects
+and Rails models conveniently by specifying a whole lot of default values that
+are only used in the test environment. That way, each test can create records
+and just specify the data that is relevant to the test. The test reads better
+and there is less work to do when writing each test.
+
+NB: There are some people who also don't like factories and argue that if your
+Rails app's API is inconvenient to use, you should improve it rather than using
+factories to get around the problem. I'm not sure how they handle providing
+numerous test-env specific default values to Rails models, though.
+
+### Install FactoryGirl and set it up
+
+* Add to `Gemfile`:
+
+  ```ruby
+  # factories
+  group :test do
+    gem 'factory_girl_rails'
+  end
+  ```
+
+* Install:
+
+  ```
+  bundle
+  ```
+
+* Add some factory definitions to `spec/factories/pharmacy.rb`:
+
+  ```ruby
+  FactoryGirl.define do
+    factory :pharmacy do
+      name "Chemical Warehouse"
+
+      trait :late_night_thursday do
+        open_periods {
+          [build(:open_period, day: "Thursday", time_to: "21:00")]
+        }
+      end
+    end
+
+    factory :open_period do
+    end
+  end
+  ```
+
+And add a test that uses the factory definitions to `spec/models/pharmacy_spec.rb`:
+
+  ```ruby
+    it 'should use a factory' do
+      pharmacy = FactoryGirl.create(:pharmacy, open_periods: [
+        FactoryGirl.build(:open_period, day: "Monday", time_from: '09:00'),
+        FactoryGirl.build(:open_period, day: "Tuesday", time_from: '09:00'),
+      ])
+      expect(pharmacy.open_periods_formatted).to eq "Monday: 9am - 5pm\nTuesday: 9am - 5pm"
+    end
+  ```
+
+Run it:
+
+  ```
+  rspec spec/models/pharmacy_spec.rb
+  ```
+
+Notice how we didn't have to specify the `name` of the pharmacy when we created
+it in the test. We could also set any defaults we liked for all attributes
+involved.
+
 ----
 
 ## BDD
@@ -310,4 +397,5 @@ Run the test and get it passing. You may have to implement more Rails code befor
   ```
 
 Notice the way a Firefox window pops up and runs your test.
+
 
