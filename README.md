@@ -424,6 +424,19 @@ Add to `spec/rails_helper.rb` at the bottom.
   require './spec/support/database_cleaner'
   ```
 
+### Run the failing acceptance test
+
+Make sure you run the test to see that it fails, before you start implementing it.
+
+  ```
+  rspec spec/features/manage_pharmacies_spec.rb
+  ```
+
+Firefox should pop up under the remote control of this test script, and then
+the test should fail with a meaningful message that implies you haven't built
+this feature yet. You may also have to install Firefox if you don't already
+have it.
+
 ### Implement the acceptance test
 
 Update `app/models/pharmacy.rb`
@@ -462,16 +475,11 @@ Add to `app/assets/javascripts/application.js`:
   //= require jquery_nested_form
   ```
 
-Run the test and get it passing. You may have to implement more Rails code
-before it passes. You may also have to install Firefox if you don't already
-have it. You may also want to use TDD to build the little bits and pieces
-you need.
+Run the test each time you think another step or two will pass.
 
   ```
   rspec spec/features/manage_pharmacies_spec.rb
   ```
 
-Notice the way a Firefox window pops up, under remote control, and runs your
-test.
-
-
+You will have to implement more Rails code before it passes. When doing so, try
+using TDD to build the little bits and pieces you need.
