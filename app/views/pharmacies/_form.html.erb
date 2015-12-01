@@ -1,21 +1,38 @@
-<%= form_for(@pharmacy) do |f| %>
-  <% if @pharmacy.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@pharmacy.errors.count, "error") %> prohibited this pharmacy from being saved:</h2>
+<%= nested_form_for(@pharmacy) do |f| %>
+<% if @pharmacy.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(@pharmacy.errors.count, "error") %>
+    prohibited this pharmacy from being saved:</h2>
 
-      <ul>
-      <% @pharmacy.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <ul>
+    <% @pharmacy.errors.full_messages.each do |message| %>
+    <li><%= message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
 
-  <div class="field">
-    <%= f.label :name %><br>
-    <%= f.text_field :name %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+<div class="field">
+  <%= f.label :name %><br>
+  <%= f.text_field :name %>
+</div>
+
+<%= f.fields_for :open_periods do |open_period_form| %>
+
+<%= open_period_form.label :day %>
+<%= open_period_form.text_field :day, placeholder: "Day" %>
+
+<%= open_period_form.label :time_from %>
+<%= open_period_form.time_field :time_from %>
+
+<%= open_period_form.label :time_to %>
+<%= open_period_form.time_field :time_to %>
+
+<%= open_period_form.link_to_remove "Remove this open period" %>
+<% end %>
+<p><%= f.link_to_add "Add an open period", :open_periods %></p>
+
+<div class="actions">
+  <%= f.submit %>
+</div>
 <% end %>

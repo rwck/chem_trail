@@ -10,6 +10,13 @@ class PharmaciesController < ApplicationController
   # GET /pharmacies/1
   # GET /pharmacies/1.json
   def show
+    @day = OpenPeriod.find_by(pharmacy_id:@pharmacy.id).day
+    @opening_hours = "Thursday: 9:00 AM - 8:00 PM"
+    @open = OpenPeriod.find_by(pharmacy_id:@pharmacy.id).time_from.strftime("%l:%M %p").strip
+    @closed = OpenPeriod.find_by(pharmacy_id:@pharmacy.id).time_to.strftime("%l:%M %p").strip
+    @test = @pharmacy.id
+
+    # @opening_hours = Pharmacy:id
   end
 
   # GET /pharmacies/new
@@ -69,6 +76,12 @@ class PharmaciesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def pharmacy_params
-      params.require(:pharmacy).permit(:name)
+      params.require(:pharmacy).permit(:name, open_periods_attributes: [:id, :_destroy, :day, :time_from, :time_to])
     end
 end
+
+
+
+
+
+# params.require(:pharmacy).permit(:name, open_periods_attributes: [:id, :_destroy, :day, :time_from. :time_to])

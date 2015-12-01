@@ -52,3 +52,26 @@ group :development do
   gem 'awesome_print'     # ap is like pp but nicer
 end
 
+
+group :test, :development do
+  gem 'rspec-rails' # this is for testing
+  gem 'simplecov', require: false # make sure it's installed but don't put it in automatically - you wnat to control this in the right way.
+  gem 'factory_girl_rails'
+end
+
+
+# capybara etc
+group :test, :development do
+  gem 'capybara' #fill_in forms and click_buttons -- no javascript though
+end
+
+# nested form gem
+
+gem 'nested_form'
+gem 'puma'
+
+group :test, :development do
+  gem 'selenium-webdriver' # remote control for firefox
+  gem 'database_cleaner' # conveniently truncate tables
+  gem 'launchy' # like 'open' in the command line - enables the command save_and_open_page
+end
